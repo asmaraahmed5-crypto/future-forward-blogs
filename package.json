@@ -1,0 +1,10 @@
+{
+  "name": "future-forward-blogs",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm --prefix astro-site ci && npm --prefix astro-site run build",
+    "deploy": "npm run build && npx wrangler deploy"
+  },
+  "engines": { "node": ">=22.12.0" }
+}
