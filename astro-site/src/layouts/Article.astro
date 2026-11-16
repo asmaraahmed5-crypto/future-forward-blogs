@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import { COVERS, PHOTOS, ALT } from '../plugins/media.mjs';
+import { AUTHORS } from '../data/authors.mjs';
 const { entry, headings, minutes, noindex, faq, file, children = [] } = Astro.props;
 const d = entry.data;
 const SITE = 'https://futureforwardstudios.com';
@@ -17,7 +18,7 @@ const jsonld: object[] = [
   { '@context': 'https://schema.org', '@type': 'Article', headline: h1, description: d.meta_description, mainEntityOfPage: canonical,
     ...(cover ? { image: `${SITE}/photos/${cover}-1600.jpg` } : {}),
     ...(checked ? { datePublished: checked, dateModified: checked } : {}),
-    author: { '@type': 'Organization', name: 'Future Forward Studios', url: SITE + '/about/' },
+    author: AUTHORS.map((a) => ({ '@type': 'Person', name: a.name, url: `${SITE}/about/#${a.id}`, jobTitle: a.role })),
     publisher: { '@type': 'Organization', name: 'Future Forward Studios', url: SITE, logo: { '@type': 'ImageObject', url: SITE + '/logo-icon.png' } } },
 ];
 if (faq.length && !noindex) jsonld.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map((f: any) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
@@ -26,10 +27,10 @@ if (faq.length && !noindex) jsonld.push({ '@context': 'https://schema.org', '@ty
   <div class="wrap article-layout">
     <article class="article">
       <p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> <span>{h1}</span></p>
-      <p class="meta-line">By <a href="/about/">Future Forward Studios</a> &middot; {checked && <>Details checked <time datetime={checked}>{checkedLabel}</time> &middot; </>}{minutes} min read &middot; <a href="/editorial-policy/">How we write guides</a></p>
+      <p class="meta-line">By {AUTHORS.map((a, i) => <>{i > 0 && ' and '}<a href={`/about/#${a.id}`}>{a.name}</a></>)} &middot; {checked && <>Details checked <time datetime={checked}>{checkedLabel}</time> &middot; </>}{minutes} min read &middot; <a href="/editorial-policy/">How we write guides</a></p>
       {toc.length > 0 && <details class="toc-m"><summary>On this page</summary><ol>{toc.map((h: any) => <li><a href={'#' + h.slug}>{h.text}</a></li>)}</ol></details>}
       <div class="prose"><slot /></div>
-      <aside class="byline-brand"><img src="/logo-primary.png" width="64" height="64" alt="Future Forward Studios logo" loading="lazy" /><p><strong>Future Forward Studios</strong><span>Practical, beginner-friendly guides for building things online. <a href="/about/">About us</a></span></p></aside>
+      <aside class="byline-brand authors" aria-label="About the authors"><div class="auth-list">{AUTHORS.map((a) => <div class="auth"><strong><a href={`/about/#${a.id}`}>{a.name}</a></strong><em>{a.role}</em><span>{a.bio}</span></div>)}</div><p class="auth-more">Written for <a href="/about/">Future Forward Studios</a>. <a href="/editorial-policy/">How we write guides</a></p></aside>
     </article>
     <aside class="side">
       {toc.length > 0 && <nav class="toc" aria-label="On this page"><h2>On this page</h2><ol>{toc.map((h: any) => <li><a href={'#' + h.slug}>{h.text}</a></li>)}</ol></nav>}

@@ -25,6 +25,20 @@ We try to write for one reader at a time: someone who has a goal, limited time, 
 
 Future Forward Studios is a small, independent publisher working in the United States. We write each guide to be useful to someone starting from scratch, and we keep this site free of clutter so the information is easy to find and follow.
 
+## The people behind the guides
+
+<div class="about-authors">
+
+<h3 id="asmara-ahmed">Asmara Ahmed</h3>
+
+*Co-founder and writer.* Asmara Ahmed writes and edits the guides at Future Forward Studios. She focuses on beginner-friendly explanations of building a website, choosing hosting, and getting started with SEO and online tools, and checks product details against official documentation before a guide is published.
+
+<h3 id="sofia-samuel">Sofia Samuel</h3>
+
+*Co-founder and writer.* Sofia Samuel writes and reviews the guides at Future Forward Studios. She covers CRM software, email marketing and AI tools for small businesses, and aims to turn comparisons and pricing into clear next steps a beginner can follow.
+
+</div>
+
 ## Independence and how the site is funded
 
 The site currently runs no advertising and uses no affiliate links. If that changes, we will say so clearly here and in our Privacy Policy and Terms, and label any relevant content.
@@ -38,4 +52,5 @@ To report a correction or ask a question, email [contactus@futureforwardstudios.
 ## Related pages
 
 - [Privacy Policy](/privacy-policy/)
+- [Editorial Policy](/editorial-policy/)
 - [Terms and Conditions](/terms/)

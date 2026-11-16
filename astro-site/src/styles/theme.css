@@ -325,3 +325,9 @@ thead th{background:#111;color:#fff}
 @media (max-width:980px){.grid-cat{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.grid-cat{grid-template-columns:1fr}}
 .cat-group{margin-bottom:56px}
+
+.byline-brand.authors{display:block}
+.auth-list{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.auth{display:grid;gap:3px;font-size:.9rem;color:var(--text-2)}
+.auth em{font-style:normal;color:var(--muted);font-size:.8rem}
+.auth-more{margin:14px 0 0;font-size:.85rem;color:var(--muted)}
