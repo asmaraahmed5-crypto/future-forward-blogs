@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description: string; canonical: string; noindex?: boolean; ogImage?: string; ogType?: string; jsonld?: object[]; active?: string }
+const { title, description, canonical, noindex = false, ogImage = '/logo-primary.png', ogType = 'website', jsonld = [], active = '' } = Astro.props;
+const abs = (u: string) => (u.startsWith('http') ? u : new URL(u, Astro.site).toString());
+import { CATEGORIES } from '../data/categories.mjs';
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:site_name" content="Future Forward Studios" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={abs(ogImage)} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content={abs(ogImage)} />
+  <link rel="icon" href="/logo-icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/logo-icon.png" />
+  <link rel="preload" href="/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts.css" />
+  {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><i></i></div>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="/" aria-label="Future Forward Studios home"><img class="logo" src="/logo-icon.png" width="40" height="40" alt="" /><span>Future Forward Studios</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu"><span class="nt-bars" aria-hidden="true"></span><span class="nt-label">Menu</span></button>
+      <nav aria-label="Main" id="menu" class="mainnav">
+        <ul class="menu">
+          {CATEGORIES.map((c) => (
+            <li class="has-sub">
+              <a href={`/category/${c.slug}/`} aria-current={active === `cat:${c.slug}` ? 'page' : undefined}>{c.name}</a>
+              <button class="sub-toggle" type="button" aria-expanded="false" aria-label={`Show ${c.name} sub categories`}><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <ul class="sub">
+                <li><a href={`/category/${c.slug}/`}>All {c.name}</a></li>
+                {c.subs.map((s) => <li><a href={`/category/${c.slug}/${s.slug}/`}>{s.name}</a></li>)}
+              </ul>
+            </li>
+          ))}
+          <li><a href="/about/" aria-current={active === '/about/' ? 'page' : undefined}>About</a></li>
+          <li><a href="/contact/" aria-current={active === '/contact/' ? 'page' : undefined}>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main"><slot /></main>
+  <footer class="site-footer"><div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="foot-brand" href="/" aria-label="Future Forward Studios home"><img src="/logo-primary.png" width="48" height="48" alt="" loading="lazy" /><strong>Future Forward Studios</strong></a>
+        <p>Practical, beginner-friendly guides for building and growing a website, with clear next steps.</p>
+        <p class="foot-contact"><a href="mailto:contactus@futureforwardstudios.com">contactus@futureforwardstudios.com</a></p>
+      </div>
+      {CATEGORIES.slice(0, 3).map((c) => (
+        <nav class="foot-col" aria-label={c.name}>
+          <h2><a href={`/category/${c.slug}/`}>{c.name}</a></h2>
+          <ul>{c.subs.map((s) => <li><a href={`/category/${c.slug}/${s.slug}/`}>{s.name}</a></li>)}</ul>
+        </nav>
+      ))}
+      <nav class="foot-col" aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="/category/business-tools/">Business Tools</a></li><li><a href="/category/ai-tools/">AI Tools</a></li><li><a href="/category/marketing/">Marketing</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/image-credits/">Image credits</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <p class="fine">&copy; {year} Future Forward Studios. Based in the USA.</p>
+      <nav class="foot-legal" aria-label="Legal"><a href="/privacy-policy/">Privacy Policy</a><a href="/terms/">Terms and Conditions</a><a href="/sitemap-index.xml">Sitemap</a></nav>
+    </div>
+  </div></footer>
+  <script is:inline src="/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import Article from '../layouts/Article.astro';
+import Base from '../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  const pages = await getCollection('pages');
+  const clean = (s: string) => s.replace(/^\/|\/$/g, '');
+  return [
+    ...articles.map((e) => ({ params: { slug: clean(e.data.slug) }, props: { entry: e, kind: 'article' } })),
+    ...pages.map((e) => ({ params: { slug: clean(e.data.slug) }, props: { entry: e, kind: 'page' } })),
+  ];
+}
+const { entry, kind } = Astro.props;
+const { Content, headings } = await render(entry);
+const body = entry.body ?? '';
+const noindex = /\[(VERIFY|MY EXPERIENCE):/.test(body);
+const words = body.replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+const faq: { q: string; a: string }[] = [];
+const faqPart = body.split(/^## FAQ\s*$/m)[1];
+if (faqPart) for (const m of faqPart.matchAll(/^### (.+)\n+([\s\S]*?)(?=\n### |\n## |$)/gm)) faq.push({ q: m[1].trim(), a: m[2].replace(/\[[^\]]*\]/g, '').replace(/\s+/g, ' ').trim() });
+const file = entry.filePath ? entry.filePath.split('/').pop()!.replace(/\.md$/, '') : '';
+const SITE = 'https://futureforwardstudios.com';
+const slug = '/' + entry.data.slug.replace(/^\/|\/$/g, '') + '/';
+const h1 = headings.find((h) => h.depth === 1)?.text ?? entry.data.seo_title ?? '';
+---
+{kind === 'article' ? (
+  <Article entry={entry} headings={headings} minutes={minutes} noindex={noindex} faq={faq} file={file}><Content /></Article>
+) : (
+  <Base title={entry.data.seo_title || h1} description={entry.data.meta_description || ''} canonical={SITE + slug} noindex={noindex} active={slug}
+    jsonld={[{ '@context': 'https://schema.org', '@type': slug === '/about/' ? 'AboutPage' : slug === '/contact/' ? 'ContactPage' : 'WebPage', name: h1, url: SITE + slug }]}>
+    <div class="wrap"><article class="article narrow"><p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> <span>{h1}</span></p><div class="prose"><Content /></div></article></div>
+  </Base>
+)}

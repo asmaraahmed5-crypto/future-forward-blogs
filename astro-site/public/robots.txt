@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://futureforwardstudios.com/sitemap-index.xml

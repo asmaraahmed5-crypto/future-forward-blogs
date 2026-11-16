@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+._*
+.claude/
+site/
+blog-seo-plan/
+*.log
+Future Forward Studios Articles/ai-rewriter-test-notes.md
+Future Forward Studios Articles/CLAUDE-PUBLISHING-INSTRUCTIONS.md

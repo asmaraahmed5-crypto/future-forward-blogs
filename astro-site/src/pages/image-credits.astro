@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import { PHOTOS, ALT } from '../plugins/media.mjs';
+const rows = Object.entries(PHOTOS) as [string, any][];
+---
+<Base title="Image credits | Future Forward Studios" description="Sources and licenses for the photographs used on Future Forward Studios." canonical="https://futureforwardstudios.com/image-credits/" noindex={true}>
+  <div class="wrap"><article class="article narrow">
+    <p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> <span>Image credits</span></p>
+    <div class="prose">
+      <h1>Image credits</h1>
+      <p>The photographs on this site are released under the CC0 / public domain dedication, which means they are free to use without permission or attribution. We list them here anyway, to credit the photographers and show where each image came from. The illustrations in our guides are original drawings made for this site.</p>
+      <p>Small tool and company logos next to product names come from the <a href="https://simpleicons.org/">Simple Icons</a> collection (CC0), or are plain letter badges where no logo glyph was available. All names and logos are trademarks of their respective owners. They are used only to identify the products we review, and Future Forward Studios is not affiliated with or endorsed by them.</p>
+      <ul class="credits">{rows.map(([k, p]) => (
+        <li><img src={`/photos/${k}-800.jpg`} width="120" height={Math.round(120 * p.aspect)} alt={ALT[k]} loading="lazy" decoding="async" />
+          <span><strong>{p.title}</strong><br />Photo: {p.creator || 'Rawpixel'} &middot; {p.license} &middot; via {p.source}{p.page ? <> &middot; <a href={p.page} rel="noopener noreferrer">source page</a></> : null}</span></li>))}</ul>
+    </div>
+  </article></div>
+</Base>

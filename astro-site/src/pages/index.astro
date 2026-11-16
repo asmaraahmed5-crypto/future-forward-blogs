@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { COVERS, PHOTOS, ALT } from '../plugins/media.mjs';
+import { CATEGORIES } from '../data/categories.mjs';
+
+const all = await getCollection('articles');
+const items = all.map((e) => {
+  const body = e.body ?? '';
+  const words = body.replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
+  const file = e.filePath!.split('/').pop()!.replace(/\.md$/, '');
+  const h1 = (body.match(/^#\s+(.+)$/m) ?? [])[1] ?? e.data.seo_title ?? '';
+  return { e, h1, minutes: Math.max(1, Math.round(words / 220)), cover: COVERS[file], href: '/' + e.data.slug.replace(/^\/|\/$/g, '') + '/' };
+}).sort((a, b) => (b.e.data.date ?? '').localeCompare(a.e.data.date ?? '') || a.h1.localeCompare(b.h1));
+const byFile = new Map(items.map((i) => [i.href.replace(/\//g, ''), i]));
+const sections = CATEGORIES.map((c) => ({ c, items: c.subs.flatMap((sb) => sb.articles).map((f) => byFile.get(f)).filter(Boolean) as typeof items })).filter((x) => x.items.length);
+const [feat] = items;
+const img = (cover?: string) => cover ? `/photos/${cover}-800.jpg` : null;
+---
+<Base title="Future Forward Studios | Practical guides for beginners" description="Step-by-step, beginner-friendly guides for building and growing a website, with checked details and clear next steps." canonical="https://futureforwardstudios.com/" active="home"
+  jsonld={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Future Forward Studios', url: 'https://futureforwardstudios.com/' }]}>
+  <section class="hero"><div class="wrap"><img class="hero-logo" src="/logo-primary.png" width="120" height="120" alt="Future Forward Studios logo" />
+    <p class="eyebrow">The Future Forward Studios blog</p>
+    <h1>Clear, practical guides for building things online.</h1>
+    <p class="lede">Step-by-step articles for beginners: what to do, what to check, and when it is worth paying.</p>
+  </div></section>
+  <nav class="wrap cat-jump" aria-label="Browse by category">
+    <span>Browse by category</span>
+    <ul>{sections.map(({ c, items: it }) => <li><a href={`#cat-${c.slug}`}>{c.name}<small>{it.length}</small></a></li>)}</ul>
+  </nav>
+  {feat && (
+    <section class="wrap latest feat-wrap" aria-labelledby="latest">
+      <h2 id="latest" class="section-label">Featured guide</h2>
+      <a class="featured has-img" href={feat.href}>
+        {feat.cover && <img src={img(feat.cover)!} width="800" height={Math.round(800 * PHOTOS[feat.cover].aspect)} alt={ALT[feat.cover]} fetchpriority="high" decoding="async" />}
+        <div class="f-body">
+          <span class="kicker">Featured &middot; {feat.e.data.content_type ?? 'Article'} &middot; {feat.minutes} min read</span>
+          <h2>{feat.h1}</h2>
+          <p>{feat.e.data.meta_description}</p>
+          <span class="more">Read the guide <span aria-hidden="true">&rarr;</span></span>
+        </div>
+      </a>
+    </section>
+  )}
+  {sections.map(({ c, items: it }, idx) => (
+    <section class={`wrap cat-section${idx % 2 ? ' alt' : ''}`} id={`cat-${c.slug}`} aria-labelledby={`h-${c.slug}`}>
+      <header class="cat-head">
+        <div>
+          <p class="kicker">{it.length} {it.length === 1 ? 'guide' : 'guides'}</p>
+          <h2 id={`h-${c.slug}`}><a href={`/category/${c.slug}/`}>{c.name}</a></h2>
+          <p class="cat-blurb">{c.blurb}</p>
+        </div>
+        <ul class="chips-row" aria-label={`${c.name} sub categories`}>{c.subs.map((sb) => <li><a href={`/category/${c.slug}/${sb.slug}/`}>{sb.name}</a></li>)}</ul>
+      </header>
+      <ul class="cards">{it.slice(0, 6).map((a) => (
+        <li class="card"><a href={a.href}>
+          {a.cover && <img src={img(a.cover)!} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt={ALT[a.cover]} loading="lazy" decoding="async" />}
+          <span class="kicker">{a.e.data.content_type ?? 'Article'} &middot; {a.minutes} min read</span>
+          <h3>{a.h1}</h3>
+          <p>{a.e.data.meta_description}</p>
+          <span class="more">Read the guide <span aria-hidden="true">&rarr;</span></span>
+        </a></li>))}</ul>
+      <p class="cat-more"><a href={`/category/${c.slug}/`}>View all {c.name} guides <span aria-hidden="true">&rarr;</span></a></p>
+    </section>
+  ))}
+</Base>
