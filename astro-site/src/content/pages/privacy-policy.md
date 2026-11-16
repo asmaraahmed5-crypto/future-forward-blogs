@@ -8,7 +8,7 @@ meta_description: "How Future Forward Studios handles information when you visit
 
 This policy explains what information is handled when you visit futureforwardstudios.com (the "site"), how it is used, and what choices you have. It is a draft prepared for the site owner and is not legal advice.
 
-**Last updated: November 15, 2026.**
+**Last updated: November 17, 2026.**
 
 ## Who we are
 
@@ -32,9 +32,9 @@ The site is hosted and delivered through Cloudflare, Inc., a provider based in t
 
 ### Cookies and similar technologies
 
-The pages themselves do not set cookies. If we add analytics or advertising, those services may set cookies or use similar technologies, and this policy will be updated first.
+The site's own pages do not set cookies. We use Google Tag Manager (see below), which loads the measurement tags we configure, and those tags may set cookies or use similar identifiers in your browser.
 
-At the time of writing, the site does not run analytics or advertising services and does not use tracking cookies, so no cookie consent banner is needed. If we add analytics or advertising later, we will name the service, describe the data it collects, and add the required consent options before it goes live.
+You can block or delete cookies in your browser settings, and you can use browser privacy controls or Google's [Analytics opt-out browser add-on](https://tools.google.com/dlpage/gaoptout) to limit measurement. If we add advertising services later, we will name them, describe the data they collect, and add the required consent options before they go live.
 
 ## How we use information
 
@@ -51,7 +51,7 @@ We do not sell your personal information.
 
 We may link to other websites, such as the platforms discussed in our guides. We do not control them and are not responsible for their privacy practices, so please read their policies.
 
-The site does not currently send visitor data to analytics, advertising, or social media services, and it does not embed third-party media. If we introduce display advertising in the future, advertising partners may use cookies to show and measure ads, and we will explain this here and link to opt-out controls such as [Your Online Choices](https://www.youronlinechoices.com/) and the [Digital Advertising Alliance opt-out](https://optout.aboutads.info/).
+**Google Tag Manager.** The site loads Google Tag Manager, a tag management service provided by Google LLC. When a page loads, your browser contacts Google, which receives technical data such as your IP address, device and browser details, and the page visited. Tag Manager then runs whichever measurement tags we have set up in it, for example website analytics, which help us understand which guides are read. Google's handling of this data is described in the [Google Privacy Policy](https://policies.google.com/privacy). The site does not currently embed social media or third-party media. If we introduce display advertising in the future, advertising partners may use cookies to show and measure ads, and we will explain this here and link to opt-out controls such as [Your Online Choices](https://www.youronlinechoices.com/) and the [Digital Advertising Alliance opt-out](https://optout.aboutads.info/).
 
 ## Sharing information
 
