@@ -30,11 +30,25 @@ for (const dir of [ARTICLES, path.join(here, 'src/content/pages')]) {
 const thinSubs = new Set();
 for (const c of CATEGORIES) for (const s of c.subs) if (s.articles.length < 3) thinSubs.add(`${SITE}/category/${c.slug}/${s.slug}/`);
 
+// Collapse the generated sitemap index + sitemap-0.xml into one /sitemap.xml.
+const singleSitemap = {
+  name: 'single-sitemap',
+  hooks: {
+    'astro:build:done': ({ dir }) => {
+      const d = fileURLToPath(dir);
+      const src = path.join(d, 'sitemap-0.xml');
+      if (!fs.existsSync(src)) return;
+      fs.writeFileSync(path.join(d, 'sitemap.xml'), fs.readFileSync(src, 'utf8'));
+      for (const f of ['sitemap-0.xml', 'sitemap-index.xml']) fs.rmSync(path.join(d, f), { force: true });
+    },
+  },
+};
+
 export default defineConfig({
   site: SITE,
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap({ filter: (page) => !hidden.has(page) && !page.includes('/image-credits') && !thinSubs.has(page) })],
+  integrations: [sitemap({ filter: (page) => !hidden.has(page) && !page.includes('/image-credits') && !thinSubs.has(page) }), singleSitemap],
   markdown: { processor: unified({ remarkPlugins: [remarkMarkers], rehypePlugins: [rehypeMedia, rehypeBrands] }) },
   vite: { server: { fs: { allow: ['..'] } } },
 });
