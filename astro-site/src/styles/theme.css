@@ -131,3 +131,22 @@ thead th{background:#111;color:#fff}
 .foot-bottom .fine{color:rgba(255,255,255,.65)}
 @media (max-width:960px){.foot-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:520px){.foot-grid{grid-template-columns:1fr}}
+
+/* footer hover states (dark background) */
+.site-footer a{transition:color .18s,background-color .18s,transform .18s}
+.foot-col a,.foot-legal a,.foot-contact a{text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .25s var(--ease),color .18s}
+.foot-col a:hover,.foot-col a:focus-visible,.foot-legal a:hover,.foot-legal a:focus-visible,.foot-contact a:hover,.foot-contact a:focus-visible{color:#fff;background-size:100% 1px;text-decoration:none}
+.foot-col h2 a,.foot-col h2 a:hover,.foot-col h2 a:focus-visible{color:#fff}
+.foot-col h2 a:hover{color:#d4d4d4}
+.foot-brand:hover,.foot-brand:focus-visible{color:#d4d4d4;text-decoration:none}
+.foot-brand:hover img{transform:scale(1.06)}
+.foot-brand img{transition:transform .2s}
+.site-footer a:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:4px}
+.foot-grid{grid-template-columns:2fr repeat(4,1fr);align-items:start}
+.foot-col h2{margin:0 0 12px;line-height:1.4;min-height:1.5rem}
+.foot-col h2 a{display:inline;background:none}
+.foot-col h2 a:hover{text-decoration:underline;text-underline-offset:.25em}
+.foot-col li a{min-height:34px}
+.foot-contact a{font-size:.85rem;overflow-wrap:anywhere}
+@media (max-width:960px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.foot-grid{grid-template-columns:1fr}}
