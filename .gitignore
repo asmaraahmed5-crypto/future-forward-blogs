@@ -9,3 +9,5 @@ blog-seo-plan/
 *.log
 Future Forward Studios Articles/ai-rewriter-test-notes.md
 Future Forward Studios Articles/CLAUDE-PUBLISHING-INSTRUCTIONS.md
+.wrangler/
+futureforwardstudios.com-audit/

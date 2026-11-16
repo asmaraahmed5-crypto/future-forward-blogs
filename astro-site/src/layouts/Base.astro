@@ -5,6 +5,35 @@ interface Props { title: string; description: string; canonical: string; noindex
 const { title, description, canonical, noindex = false, ogImage = '/logo-primary.png', ogType = 'website', jsonld = [], active = '' } = Astro.props;
 const abs = (u: string) => (u.startsWith('http') ? u : new URL(u, Astro.site).toString());
 import { CATEGORIES } from '../data/categories.mjs';
+import { getCollection } from 'astro:content';
+import { COVERS, PHOTOS } from '../plugins/media.mjs';
+const arts = await getCollection('articles');
+const info = new Map<string, { h1: string; href: string }>();
+for (const e of arts) {
+  const file = e.filePath!.split('/').pop()!.replace(/\.md$/, '');
+  info.set(file, { h1: (e.body ?? '').match(/^#\s+(.+)$/m)?.[1] ?? e.data.seo_title ?? file, href: '/' + e.data.slug.replace(/^\/|\/$/g, '') + '/' });
+}
+const ICONS: Record<string, string> = {
+  'website-building': '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h4"/>',
+  'web-hosting': '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  'seo': '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/>',
+  'business-tools': '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5M18 20c0-2.2-.9-4-2.5-5"/>',
+  'ai-tools': '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+  'marketing': '<path d="M4 13v-2a1 1 0 0 1 1-1h3l8-4v12l-8-4H5a1 1 0 0 1-1-1z"/><path d="M8 15l1.5 4"/>',
+};
+const GROUPS = [
+  { key: 'websites', label: 'Websites', cats: ['website-building', 'web-hosting'], featured: 'create-a-website-for-free', tag: 'Start here' },
+  { key: 'seo', label: 'SEO', cats: ['seo'], featured: 'free-seo-checker', tag: 'Popular' },
+  { key: 'marketing', label: 'Marketing and Tools', cats: ['marketing', 'ai-tools', 'business-tools'], featured: 'best-email-marketing-software', tag: 'Featured' },
+];
+const words = (b: string) => Math.max(1, Math.round((b ?? '').replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length / 220));
+const bodyOf = new Map(arts.map((e) => [e.filePath!.split('/').pop()!.replace(/\.md$/, ''), e.body ?? '']));
+const menu = GROUPS.map((g) => {
+  const cats = g.cats.map((slug) => (CATEGORIES as any[]).find((c) => c.slug === slug)).filter(Boolean);
+  const f = info.get(g.featured);
+  return { ...g, cats, total: cats.reduce((n: number, c: any) => n + c.subs.reduce((m: number, sb: any) => m + sb.articles.length, 0), 0),
+    feat: f ? { ...f, cover: COVERS[g.featured], min: words(bodyOf.get(g.featured) ?? '') } : null };
+});
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -35,25 +64,63 @@ const year = new Date().getFullYear();
   <div class="progress" aria-hidden="true"><i></i></div>
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
-    <div class="wrap bar">
-      <a class="brand" href="/" aria-label="Future Forward Studios home"><img class="logo" src="/logo-icon.png" width="40" height="40" alt="" /><span>Future Forward Studios</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu"><span class="nt-bars" aria-hidden="true"></span><span class="nt-label">Menu</span></button>
-      <nav aria-label="Main" id="menu" class="mainnav">
-        <ul class="menu">
-          {CATEGORIES.map((c) => (
-            <li class="has-sub">
-              <a href={`/category/${c.slug}/`} aria-current={active === `cat:${c.slug}` ? 'page' : undefined}>{c.name}</a>
-              <button class="sub-toggle" type="button" aria-expanded="false" aria-label={`Show ${c.name} sub categories`}><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <ul class="sub">
-                <li><a href={`/category/${c.slug}/`}>All {c.name}</a></li>
-                {c.subs.map((s) => <li><a href={`/category/${c.slug}/${s.slug}/`}>{s.name}</a></li>)}
-              </ul>
-            </li>
+    <div class="nb" id="nb">
+      <div class="nb-top">
+        <a class="nb-brand" href="/" aria-label="Future Forward Studios home"><img class="logo" src="/logo-icon.png" width="40" height="40" alt="" /><span>Future Forward Studios</span></a>
+        <nav class="nb-nav" aria-label="Main">
+          {menu.map((g: any) => (
+            <button type="button" class="nb-item" data-nb={g.key} aria-expanded="false" aria-controls={`nbp-${g.key}`}>{g.label}<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           ))}
-          <li><a href="/about/" aria-current={active === '/about/' ? 'page' : undefined}>About</a></li>
-          <li><a href="/contact/" aria-current={active === '/contact/' ? 'page' : undefined}>Contact</a></li>
-        </ul>
-      </nav>
+          <a class="nb-item nb-link" href="/#cat-website-building">All guides</a>
+        </nav>
+        <div class="nb-actions">
+          <a class="nb-btn nb-btn-ghost" href="/about/" aria-current={active === '/about/' ? 'page' : undefined}>About</a>
+          <a class="nb-btn nb-btn-dark" href="/contact/" aria-current={active === '/contact/' ? 'page' : undefined}>Contact</a>
+        </div>
+        <button class="nb-burger" type="button" aria-expanded="false" aria-controls="nb-mobile" aria-label="Open menu"><span aria-hidden="true"></span></button>
+      </div>
+
+      <div class="nb-panel" id="nb-panel"><div class="nb-panel-in">
+        {menu.map((g: any) => (
+          <div class="nb-mega" id={`nbp-${g.key}`} data-for={g.key} hidden>
+            <div class="nb-cats" style={`--n:${g.cats.length}`}>
+              {g.cats.map((c: any) => (
+                <section class="nb-cat">
+                  <a class="nb-cat-head" href={`/category/${c.slug}/`}>
+                    <span class="nb-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[c.slug]} /></span>
+                    <span><strong>{c.name}</strong><em>{c.blurb}</em></span>
+                  </a>
+                  <ul>{c.subs.map((sb: any) => <li><a href={`/category/${c.slug}/${sb.slug}/`}><span>{sb.name}</span><small>{sb.articles.length}</small></a></li>)}</ul>
+                </section>
+              ))}
+            </div>
+            {g.feat && (
+              <a class="nb-feat" href={g.feat.href}>
+                {g.feat.cover && <img src={`/photos/${g.feat.cover}-800.jpg`} width="800" height={Math.round(800 * PHOTOS[g.feat.cover].aspect)} alt="" loading="lazy" />}
+                <span class="nb-feat-tag">{g.tag}</span>
+                <span class="nb-feat-body"><strong>{g.feat.h1}</strong><em>{g.feat.min} min read &middot; Read the guide &rarr;</em></span>
+              </a>
+            )}
+            <div class="nb-strip"><span>{g.total} guides in {g.label}</span><a href={`/category/${g.cats[0].slug}/`}>Browse {g.cats[0].name} &rarr;</a></div>
+          </div>
+        ))}
+      </div></div>
+
+      <div class="nb-mobile" id="nb-mobile" hidden>
+        {menu.map((g: any) => (
+          <details class="nb-acc">
+            <summary>{g.label}<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+            {g.cats.map((c: any) => (
+              <div class="nb-acc-cat">
+                <a class="nb-acc-head" href={`/category/${c.slug}/`}>{c.name}</a>
+                <ul>{c.subs.map((sb: any) => <li><a href={`/category/${c.slug}/${sb.slug}/`}>{sb.name}</a></li>)}</ul>
+              </div>
+            ))}
+          </details>
+        ))}
+        <a class="nb-acc-link" href="/#cat-website-building">All guides</a>
+        <div class="nb-mobile-btns"><a class="nb-btn nb-btn-ghost" href="/about/">About</a><a class="nb-btn nb-btn-dark" href="/contact/">Contact</a></div>
+      </div>
     </div>
   </header>
   <main id="main"><slot /></main>
@@ -82,7 +149,7 @@ const year = new Date().getFullYear();
     </div>
     <div class="foot-bottom">
       <p class="fine">&copy; {year} Future Forward Studios. Based in the USA.</p>
-      <nav class="foot-legal" aria-label="Legal"><a href="/privacy-policy/">Privacy Policy</a><a href="/terms/">Terms and Conditions</a><a href="/sitemap-index.xml">Sitemap</a></nav>
+      <nav class="foot-legal" aria-label="Legal"><a href="/privacy-policy/">Privacy Policy</a><a href="/terms/">Terms and Conditions</a><a href="/disclaimer/">Disclaimer</a><a href="/editorial-policy/">Editorial Policy</a><a href="/sitemap-index.xml">Sitemap</a></nav>
     </div>
   </div></footer>
   <script is:inline src="/site.js" defer></script>

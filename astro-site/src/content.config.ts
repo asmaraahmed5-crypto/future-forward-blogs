@@ -13,6 +13,7 @@ const fm = z.object({
   editorial_status: z.string().optional(),
   date: z.string().optional(),
   updated: z.string().optional(),
+  research_updated: z.string().optional(),
 });
 
 // Articles live outside the Astro project, in the folder you already use. Drop a new .md there and rebuild.

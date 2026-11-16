@@ -10,7 +10,7 @@ const fig = (label, caption, inner, hint = '') =>
 
 const rv = (i, inner) => `<g class="rv" style="--i:${i}">${inner}</g>`;
 const T = (x, y, s, cls = 't', anchor = 'middle') => `<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${esc(s)}</text>`;
-const R = (x, y, w, h, cls = 's', r = 8) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" class="${cls}"/>`;
+const R = (x, y, w, h, cls = 's', r = 8) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${Math.min(r, 7)}" class="${cls}"/>`;
 const lines = (x, y, w, k, gap = 12, cls = 'm') => Array.from({ length: k }, (_, i) => R(x, y + i * gap, i === k - 1 ? w * 0.6 : w, 5, cls, 3)).join('');
 const browser = (x, y, w, h, body, url = '') =>
   `${R(x, y, w, h, 'w a', 10)}<line x1="${x}" y1="${y + 22}" x2="${x + w}" y2="${y + 22}" class="a"/>` +

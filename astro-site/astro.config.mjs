@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { unified } from '@astrojs/markdown-remark';
 import { rehypeBrands } from './src/plugins/brands.mjs';
 import { remarkMarkers, rehypeMedia } from './src/plugins/media.mjs';
+import { CATEGORIES } from './src/data/categories.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ARTICLES = path.resolve(here, '../Future Forward Studios Articles');
@@ -25,11 +26,15 @@ for (const dir of [ARTICLES, path.join(here, 'src/content/pages')]) {
   }
 }
 
+// Sub-category pages with fewer than 3 guides are noindex (see category page) and kept out of the sitemap.
+const thinSubs = new Set();
+for (const c of CATEGORIES) for (const s of c.subs) if (s.articles.length < 3) thinSubs.add(`${SITE}/category/${c.slug}/${s.slug}/`);
+
 export default defineConfig({
   site: SITE,
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap({ filter: (page) => !hidden.has(page) && !page.includes('/image-credits') })],
+  integrations: [sitemap({ filter: (page) => !hidden.has(page) && !page.includes('/image-credits') && !thinSubs.has(page) })],
   markdown: { processor: unified({ remarkPlugins: [remarkMarkers], rehypePlugins: [rehypeMedia, rehypeBrands] }) },
   vite: { server: { fs: { allow: ['..'] } } },
 });

@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { COVERS } from '../../plugins/media.mjs';
 import { CATEGORIES } from '../../data/categories.mjs';
 
 export async function getStaticPaths() {
@@ -8,13 +10,15 @@ export async function getStaticPaths() {
   const byFile = new Map(all.map((e) => {
     const file = e.filePath!.split('/').pop()!.replace(/\.md$/, '');
     const h1 = (e.body ?? '').match(/^#\s+(.+)$/m)?.[1] ?? e.data.seo_title ?? file;
-    return [file, { h1, desc: e.data.meta_description ?? '', href: '/' + e.data.slug.replace(/^\/|\/$/g, '') + '/' }];
+    const words = (e.body ?? '').replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
+    return [file, { h1, desc: e.data.meta_description ?? '', href: '/' + e.data.slug.replace(/^\/|\/$/g, '') + '/', cover: COVERS[file], minutes: Math.max(1, Math.round(words / 220)), type: e.data.content_type ?? '' }];
   }));
-  const pick = (names: string[]) => names.map((n) => byFile.get(n)).filter(Boolean);
+  const catFor = (c: any, sub: any) => ({ cat: sub.name, catHref: `/category/${c.slug}/${sub.slug}/` });
+  const pick = (names: string[], c: any, sub: any) => names.map((n) => byFile.get(n)).filter(Boolean).map((a: any) => ({ ...a, ...catFor(c, sub) }));
   const paths: any[] = [];
   for (const c of CATEGORIES) {
-    paths.push({ params: { cat: c.slug }, props: { c, sub: null, groups: c.subs.map((s) => ({ s, items: pick(s.articles) })) } });
-    for (const s of c.subs) paths.push({ params: { cat: `${c.slug}/${s.slug}` }, props: { c, sub: s, groups: [{ s, items: pick(s.articles) }] } });
+    paths.push({ params: { cat: c.slug }, props: { c, sub: null, groups: c.subs.map((s) => ({ s, items: pick(s.articles, c, s) })) } });
+    for (const s of c.subs) paths.push({ params: { cat: `${c.slug}/${s.slug}` }, props: { c, sub: s, groups: [{ s, items: pick(s.articles, c, s) }] } });
   }
   return paths;
 }
@@ -27,7 +31,7 @@ const canonical = `https://futureforwardstudios.com${path}`;
 const crumbs = [{ name: 'Home', url: 'https://futureforwardstudios.com/' }, { name: cat.name, url: `https://futureforwardstudios.com/category/${cat.slug}/` }, ...(subcat ? [{ name: subcat.name, url: canonical }] : [])];
 const jsonld = [{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, item: x.url })) }];
 ---
-<Base title={title} description={`${blurb} Beginner-friendly ${name.toLowerCase()} guides from Future Forward Studios.`} canonical={canonical} active={`cat:${cat.slug}`} jsonld={jsonld}>
+<Base title={title} description={`${blurb} Beginner-friendly ${name.toLowerCase()} guides from Future Forward Studios.`} canonical={canonical} active={`cat:${cat.slug}`} jsonld={jsonld} noindex={!!subcat && subcat.articles.length < 3}>
   <section class="hero cat-hero"><div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / {subcat ? <><a href={`/category/${cat.slug}/`}>{cat.name}</a> / <span>{subcat.name}</span></> : <span>{cat.name}</span>}</nav>
     <h1>{name}</h1>
@@ -38,9 +42,7 @@ const jsonld = [{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', i
     {grp.map((g: any) => (
       <div class="cat-group">
         {!subcat && <h2 class="section-label"><a href={`/category/${cat.slug}/${g.s.slug}/`}>{g.s.name}</a></h2>}
-        <ul class="cards">{g.items.map((a: any) => (
-          <li class="card"><a href={a.href}><h3>{a.h1}</h3><p>{a.desc}</p><span class="more">Read the guide <span aria-hidden="true">&rarr;</span></span></a></li>
-        ))}</ul>
+        <div class="grid-cat">{g.items.map((a: any) => <PostCard a={a} variant="wide" />)}</div>
       </div>
     ))}
   </section>

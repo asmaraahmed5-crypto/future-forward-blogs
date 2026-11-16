@@ -1,13 +1,14 @@
 ---
-import { PHOTOS, ALT } from '../plugins/media.mjs';
+import { PHOTOS } from '../plugins/media.mjs';
 const { a, variant = 'v', lazy = true } = Astro.props;
-const img = a.cover ? `/photos/${a.cover}-800.jpg` : null;
+const size = variant === 'lead' ? 1600 : 800;
+const img = a.cover ? `/photos/${a.cover}-${size}.jpg` : null;
 ---
-<article class={`pc pc-${variant}`}>
-  {img && variant !== 'text' && <a class="pc-img" href={a.href} tabindex="-1" aria-hidden="true"><img src={img} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt="" loading={lazy ? 'lazy' : 'eager'} decoding="async" /></a>}
+<article class={`pc pc-${variant}`} data-rev>
+  {img && <a class="pc-img" href={a.href} tabindex="-1" aria-hidden="true"><img src={img} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt="" loading={lazy ? 'lazy' : 'eager'} decoding="async" /></a>}
   <div class="pc-body">
-    <a class="pill" href={a.catHref}>{a.cat}</a>
-    <h3><a href={a.href}>{a.type && <span class="badge">{a.type}</span>} {a.h1}</a></h3>
-    {variant === 'wide' && <p>{a.desc}</p>}
+    <div class="pc-tags"><a class="pill" href={a.catHref}>{a.cat}</a><span class="pc-time">{a.type ? `${a.type} · ` : ''}{a.minutes} min read</span></div>
+    <h3><a href={a.href}>{a.h1}</a></h3>
+    {(variant === 'lead' || variant === 'wide') && <p class="pc-desc">{a.desc}</p>}
   </div>
 </article>

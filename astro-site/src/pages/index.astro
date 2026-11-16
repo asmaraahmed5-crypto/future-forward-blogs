@@ -36,10 +36,11 @@ const spotlight = pick(['wordpress-hosting-guide', 'seo-audit-checklist']);
 const catSections = CATEGORIES.map((c) => ({ c, list: c.subs.flatMap((sb: any) => sb.articles).map((f: string) => by.get(f)).filter(Boolean) as typeof all2 })).filter((x) => x.list.length);
 ---
 <Base title="Future Forward Studios | Practical guides for beginners" description="Step-by-step, beginner-friendly guides for building and growing a website, with checked details and clear next steps." canonical="https://futureforwardstudios.com/" active="home"
-  jsonld={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Future Forward Studios', url: 'https://futureforwardstudios.com/' }]}>
+  jsonld={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Future Forward Studios', url: 'https://futureforwardstudios.com/', publisher: { '@id': 'https://futureforwardstudios.com/#org' } }, { '@context': 'https://schema.org', '@type': 'Organization', '@id': 'https://futureforwardstudios.com/#org', name: 'Future Forward Studios', url: 'https://futureforwardstudios.com/', logo: 'https://futureforwardstudios.com/logo-primary.png', email: 'contactus@futureforwardstudios.com' }]}>
 
   <section class="m-hero" style={hero.cover ? `--hero:url(/photos/${hero.cover}-1600.jpg)` : ''}>
     <div class="m-wrap m-hero-in">
+      <p class="m-eyebrow m-eyebrow-w">Future Forward Studios &middot; Practical guides</p>
       <a class="pill pill-w" href={hero.catHref}>{hero.cat}</a>
       <h1><a href={hero.href}>{hero.h1}</a></h1>
       <p class="m-meta"><strong>Future Forward Studios</strong> <span>&middot; {hero.minutes} min read</span></p>
@@ -53,8 +54,8 @@ const catSections = CATEGORIES.map((c) => ({ c, list: c.subs.flatMap((sb: any) =
   </section>
 
   <section class="m-wrap m-block" aria-labelledby="feat">
-    <h2 id="feat" class="m-title">Featured Articles</h2>
-    <div class="grid5">{featured.map((a) => <PostCard a={a} variant="v" />)}</div>
+    <header class="m-head"><div><p class="m-eyebrow">Start here</p><h2 id="feat" class="m-title">Featured Articles</h2></div><a class="m-all" href="/category/website-building/">Browse categories <span aria-hidden="true">&rarr;</span></a></header>
+    <div class="grid-ed">{featured.map((a, i) => <PostCard a={a} variant={i === 0 ? 'lead' : 'v'} />)}</div>
   </section>
 
   {highlight && (
@@ -85,11 +86,11 @@ const catSections = CATEGORIES.map((c) => ({ c, list: c.subs.flatMap((sb: any) =
     </section>
   ))}
 
-  {catSections.map(({ c, list }) => (
+  {catSections.map(({ c, list }, idx) => (
     <section class="m-wrap m-block m-cat" id={`cat-${c.slug}`} aria-labelledby={`h-${c.slug}`}>
-      <h2 id={`h-${c.slug}`} class="m-title"><a href={`/category/${c.slug}/`}>{c.name}</a></h2>
+      <header class="m-head"><div><p class="m-eyebrow">{list.length} {list.length === 1 ? 'guide' : 'guides'}</p><h2 id={`h-${c.slug}`} class="m-title"><a href={`/category/${c.slug}/`}>{c.name}</a></h2></div><a class="m-all" href={`/category/${c.slug}/`}>View all <span aria-hidden="true">&rarr;</span></a></header>
       <ul class="m-subs" aria-label={`${c.name} sub categories`}>{c.subs.map((sb: any) => <li><a href={`/category/${c.slug}/${sb.slug}/`}>{sb.name}</a></li>)}</ul>
-      <div class="grid5">{list.slice(0, 5).map((a) => <PostCard a={a} variant="v" />)}</div>
+      <div class={`grid-ed${idx % 2 ? ' flip' : ''}`}>{list.slice(0, 5).map((a, i) => <PostCard a={a} variant={i === 0 ? 'lead' : 'v'} />)}</div>
       <p class="m-more"><a class="btn btn-red" href={`/category/${c.slug}/`}>More from {c.name}</a></p>
     </section>
   ))}
