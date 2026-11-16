@@ -1,0 +1,13 @@
+---
+import { PHOTOS, ALT } from '../plugins/media.mjs';
+const { a, variant = 'v', lazy = true } = Astro.props;
+const img = a.cover ? `/photos/${a.cover}-800.jpg` : null;
+---
+<article class={`pc pc-${variant}`}>
+  {img && variant !== 'text' && <a class="pc-img" href={a.href} tabindex="-1" aria-hidden="true"><img src={img} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt="" loading={lazy ? 'lazy' : 'eager'} decoding="async" /></a>}
+  <div class="pc-body">
+    <a class="pill" href={a.catHref}>{a.cat}</a>
+    <h3><a href={a.href}>{a.type && <span class="badge">{a.type}</span>} {a.h1}</a></h3>
+    {variant === 'wide' && <p>{a.desc}</p>}
+  </div>
+</article>

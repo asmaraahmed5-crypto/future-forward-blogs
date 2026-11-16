@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { COVERS, PHOTOS, ALT } from '../plugins/media.mjs';
 import { CATEGORIES } from '../data/categories.mjs';
+import PostCard from '../components/PostCard.astro';
 
 const all = await getCollection('articles');
 const items = all.map((e) => {
@@ -16,51 +17,80 @@ const byFile = new Map(items.map((i) => [i.href.replace(/\//g, ''), i]));
 const sections = CATEGORIES.map((c) => ({ c, items: c.subs.flatMap((sb) => sb.articles).map((f) => byFile.get(f)).filter(Boolean) as typeof items })).filter((x) => x.items.length);
 const [feat] = items;
 const img = (cover?: string) => cover ? `/photos/${cover}-800.jpg` : null;
+
+const catOf = new Map<string, any>();
+for (const c of CATEGORIES) for (const sb of c.subs) for (const f of sb.articles) catOf.set(f, c);
+const all2 = items.map((i) => {
+  const file = i.href.replace(/\//g, '');
+  const c = catOf.get(file);
+  return { ...i, file, desc: i.e.data.meta_description ?? '', type: i.e.data.content_type ?? '', cat: c?.name ?? 'Guides', catHref: c ? `/category/${c.slug}/` : '/' };
+});
+const by = new Map(all2.map((i) => [i.file, i]));
+const pick = (names: string[]) => names.map((n) => by.get(n)).filter(Boolean) as typeof all2;
+const hero = pick(['create-a-website-for-free'])[0] ?? all2[0];
+const strip = pick(['free-seo-checker', 'recommended-website-hosting', 'ai-website-builders', 'best-email-marketing-software']);
+const featured = pick(['best-free-website-makers', 'cheap-web-hosting', 'best-seo-tools', 'best-crm-for-small-businesses', 'free-keyword-research-tools']);
+const highlight = pick(['how-to-use-ai-in-marketing'])[0];
+const textList = pick(['what-does-crm-mean', 'h1-tag-seo', 'shared-hosting-explained', 'competitor-keyword-research']);
+const spotlight = pick(['wordpress-hosting-guide', 'seo-audit-checklist']);
+const catSections = CATEGORIES.map((c) => ({ c, list: c.subs.flatMap((sb: any) => sb.articles).map((f: string) => by.get(f)).filter(Boolean) as typeof all2 })).filter((x) => x.list.length);
 ---
 <Base title="Future Forward Studios | Practical guides for beginners" description="Step-by-step, beginner-friendly guides for building and growing a website, with checked details and clear next steps." canonical="https://futureforwardstudios.com/" active="home"
   jsonld={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Future Forward Studios', url: 'https://futureforwardstudios.com/' }]}>
-  <section class="hero"><div class="wrap"><img class="hero-logo" src="/logo-primary.png" width="120" height="120" alt="Future Forward Studios logo" />
-    <p class="eyebrow">The Future Forward Studios blog</p>
-    <h1>Clear, practical guides for building things online.</h1>
-    <p class="lede">Step-by-step articles for beginners: what to do, what to check, and when it is worth paying.</p>
-  </div></section>
-  <nav class="wrap cat-jump" aria-label="Browse by category">
-    <span>Browse by category</span>
-    <ul>{sections.map(({ c, items: it }) => <li><a href={`#cat-${c.slug}`}>{c.name}<small>{it.length}</small></a></li>)}</ul>
-  </nav>
-  {feat && (
-    <section class="wrap latest feat-wrap" aria-labelledby="latest">
-      <h2 id="latest" class="section-label">Featured guide</h2>
-      <a class="featured has-img" href={feat.href}>
-        {feat.cover && <img src={img(feat.cover)!} width="800" height={Math.round(800 * PHOTOS[feat.cover].aspect)} alt={ALT[feat.cover]} fetchpriority="high" decoding="async" />}
-        <div class="f-body">
-          <span class="kicker">Featured &middot; {feat.e.data.content_type ?? 'Article'} &middot; {feat.minutes} min read</span>
-          <h2>{feat.h1}</h2>
-          <p>{feat.e.data.meta_description}</p>
-          <span class="more">Read the guide <span aria-hidden="true">&rarr;</span></span>
+
+  <section class="m-hero" style={hero.cover ? `--hero:url(/photos/${hero.cover}-1600.jpg)` : ''}>
+    <div class="m-wrap m-hero-in">
+      <a class="pill pill-w" href={hero.catHref}>{hero.cat}</a>
+      <h1><a href={hero.href}>{hero.h1}</a></h1>
+      <p class="m-meta"><strong>Future Forward Studios</strong> <span>&middot; {hero.minutes} min read</span></p>
+      <p class="m-lede">{hero.desc}</p>
+      <a class="btn btn-blue" href={hero.href}>Read the guide</a>
+    </div>
+    <div class="m-wrap m-strip">
+      <p class="m-strip-label">Latest guides:</p>
+      <ul>{strip.map((a) => <li><a href={a.href}>{a.cover && <img src={`/photos/${a.cover}-800.jpg`} width="64" height="64" alt="" loading="lazy" />}<span>{a.h1}</span></a></li>)}</ul>
+    </div>
+  </section>
+
+  <section class="m-wrap m-block" aria-labelledby="feat">
+    <h2 id="feat" class="m-title">Featured Articles</h2>
+    <div class="grid5">{featured.map((a) => <PostCard a={a} variant="v" />)}</div>
+  </section>
+
+  {highlight && (
+    <section class="m-wrap m-block m-high">
+      <div class="m-high-main">
+        <a class="m-high-img" href={highlight.href} tabindex="-1" aria-hidden="true">{highlight.cover && <img src={`/photos/${highlight.cover}-1600.jpg`} width="800" height={Math.round(800 * PHOTOS[highlight.cover].aspect)} alt="" loading="lazy" />}</a>
+        <div class="m-high-text">
+          <a class="pill" href={highlight.catHref}>{highlight.cat}</a>
+          <h2><a href={highlight.href}>{highlight.h1}</a></h2>
+          <p>{highlight.desc}</p>
         </div>
-      </a>
+      </div>
+      <div class="m-textlist">{textList.map((a) => <PostCard a={a} variant="text" />)}</div>
     </section>
   )}
-  {sections.map(({ c, items: it }, idx) => (
-    <section class={`wrap cat-section${idx % 2 ? ' alt' : ''}`} id={`cat-${c.slug}`} aria-labelledby={`h-${c.slug}`}>
-      <header class="cat-head">
-        <div>
-          <p class="kicker">{it.length} {it.length === 1 ? 'guide' : 'guides'}</p>
-          <h2 id={`h-${c.slug}`}><a href={`/category/${c.slug}/`}>{c.name}</a></h2>
-          <p class="cat-blurb">{c.blurb}</p>
+
+  {spotlight.map((a, i) => (
+    <section class={`m-spot m-spot-${i % 2}`}>
+      <div class="m-wrap m-spot-in">
+        <div class="m-spot-text">
+          <a class="pill pill-w" href={a.catHref}>{a.cat}</a>
+          <h2><a href={a.href}>{a.h1}</a></h2>
+          <p>{a.desc}</p>
+          <a class="btn btn-light" href={a.href}>Read post</a>
         </div>
-        <ul class="chips-row" aria-label={`${c.name} sub categories`}>{c.subs.map((sb) => <li><a href={`/category/${c.slug}/${sb.slug}/`}>{sb.name}</a></li>)}</ul>
-      </header>
-      <ul class="cards">{it.slice(0, 6).map((a) => (
-        <li class="card"><a href={a.href}>
-          {a.cover && <img src={img(a.cover)!} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt={ALT[a.cover]} loading="lazy" decoding="async" />}
-          <span class="kicker">{a.e.data.content_type ?? 'Article'} &middot; {a.minutes} min read</span>
-          <h3>{a.h1}</h3>
-          <p>{a.e.data.meta_description}</p>
-          <span class="more">Read the guide <span aria-hidden="true">&rarr;</span></span>
-        </a></li>))}</ul>
-      <p class="cat-more"><a href={`/category/${c.slug}/`}>View all {c.name} guides <span aria-hidden="true">&rarr;</span></a></p>
+        <a class="m-spot-img" href={a.href} tabindex="-1" aria-hidden="true">{a.cover && <img src={`/photos/${a.cover}-1600.jpg`} width="800" height={Math.round(800 * PHOTOS[a.cover].aspect)} alt="" loading="lazy" />}</a>
+      </div>
+    </section>
+  ))}
+
+  {catSections.map(({ c, list }) => (
+    <section class="m-wrap m-block m-cat" id={`cat-${c.slug}`} aria-labelledby={`h-${c.slug}`}>
+      <h2 id={`h-${c.slug}`} class="m-title"><a href={`/category/${c.slug}/`}>{c.name}</a></h2>
+      <ul class="m-subs" aria-label={`${c.name} sub categories`}>{c.subs.map((sb: any) => <li><a href={`/category/${c.slug}/${sb.slug}/`}>{sb.name}</a></li>)}</ul>
+      <div class="grid5">{list.slice(0, 5).map((a) => <PostCard a={a} variant="v" />)}</div>
+      <p class="m-more"><a class="btn btn-red" href={`/category/${c.slug}/`}>More from {c.name}</a></p>
     </section>
   ))}
 </Base>
