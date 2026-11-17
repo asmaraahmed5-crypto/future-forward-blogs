@@ -34,7 +34,7 @@ The site is hosted and delivered through Cloudflare, Inc., a provider based in t
 
 The site's own pages do not set cookies. We use Google Tag Manager (see below), which loads the measurement tags we configure, and those tags may set cookies or use similar identifiers in your browser.
 
-You can block or delete cookies in your browser settings, and you can use browser privacy controls or Google's [Analytics opt-out browser add-on](https://tools.google.com/dlpage/gaoptout) to limit measurement. If we add advertising services later, we will name them, describe the data they collect, and add the required consent options before they go live.
+You can block or delete cookies in your browser settings, and you can use browser privacy controls or Google's [Analytics opt-out browser add-on](https://tools.google.com/dlpage/gaoptout) to limit measurement. Advertising from Google AdSense, described in the Third-party services section below, may also set cookies.
 
 ## How we use information
 
@@ -51,7 +51,9 @@ We do not sell your personal information.
 
 We may link to other websites, such as the platforms discussed in our guides. We do not control them and are not responsible for their privacy practices, so please read their policies.
 
-**Google Tag Manager.** The site loads Google Tag Manager, a tag management service provided by Google LLC. When a page loads, your browser contacts Google, which receives technical data such as your IP address, device and browser details, and the page visited. Tag Manager then runs whichever measurement tags we have set up in it, for example website analytics, which help us understand which guides are read. Google's handling of this data is described in the [Google Privacy Policy](https://policies.google.com/privacy). The site does not currently embed social media or third-party media. If we introduce display advertising in the future, advertising partners may use cookies to show and measure ads, and we will explain this here and link to opt-out controls such as [Your Online Choices](https://www.youronlinechoices.com/) and the [Digital Advertising Alliance opt-out](https://optout.aboutads.info/).
+**Google Tag Manager.** The site loads Google Tag Manager, a tag management service provided by Google LLC. When a page loads, your browser contacts Google, which receives technical data such as your IP address, device and browser details, and the page visited. Tag Manager then runs whichever measurement tags we have set up in it, for example website analytics, which help us understand which guides are read. Google's handling of this data is described in the [Google Privacy Policy](https://policies.google.com/privacy). The site does not currently embed social media or third-party media.
+
+**Google AdSense.** The site loads Google AdSense, an advertising service from Google LLC, so that ads can be shown on our pages. Google and its advertising partners may use cookies and similar technologies, and may receive your IP address, device and browser details and the pages you view, to show, personalise, measure and protect ads. Google describes how it uses data from sites that use its services at [How Google uses information from sites or apps that use our services](https://policies.google.com/technologies/partner-sites). You can manage personalised ads in [Google Ad Settings](https://adssettings.google.com/), and opt out through [Your Online Choices](https://www.youronlinechoices.com/) or the [Digital Advertising Alliance opt-out](https://optout.aboutads.info/). Whether ads appear on a given page depends on Google, and we do not control which ads are shown.
 
 ## Sharing information
 
@@ -65,7 +67,7 @@ We keep information only as long as needed for the purposes above. Server logs a
 
 Depending on where you live, you may have the right to access, correct, delete, or restrict the use of your personal information, to object to certain uses, or to withdraw consent. To make a request, contact us using the details above. You can also block or delete cookies in your browser settings.
 
-We are based in the United States, and our visitors may come from anywhere. Residents of some US states, such as California, and of regions such as the European Economic Area and the United Kingdom, have additional privacy rights. We do not sell personal information or share it for cross-context behavioral advertising. We will respond to any rights request sent to the email address above within the time the applicable law requires.
+We are based in the United States, and our visitors may come from anywhere. Residents of some US states, such as California, and of regions such as the European Economic Area and the United Kingdom, have additional privacy rights. We do not sell personal information. Advertising partners such as Google may use cookies as described in the Third-party services section, and you can use the opt-out controls linked there. We will respond to any rights request sent to the email address above within the time the applicable law requires.
 
 ## Children
 
